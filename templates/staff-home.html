@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Home Page</title>
+    <style>
+        hr.style-two {
+            width: 60%;
+            border: 0;
+            height: 2.5px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0), rgb(32, 84, 139), rgba(0,0,0,0));
+        }
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+
+        .left {
+            float: left;
+            width: 35%;
+            height: 500px;
+            margin-right: -300px;
+            text-align:center;
+        }
+        .right {
+            float: right;
+            width: 75%;
+            height:auto !important;
+            height: 500px;
+            min-height:500px;
+            text-align:center;
+        }
+        /* .center {
+            margin-top: 200px;
+            float: left;
+            width: 100%;
+            height: 300px;
+            background-color: brown;
+            text-align:center;
+        } */
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <script>
+            var messages = "{{ messages[0] | safe }}";
+                alert(messages);
+        </script>
+        {% endif %}
+    {% endwith %}
+
+    <h1>Welcome, Mr. /Mrs. {{ user_name }}</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div><br><br>
+
+    <form method="POST" action="/staff-home">
+        <div class="left">
+            <p1 style="font-size: 24px"><strong>Editing Toolbox</strong></p1>
+            <div>
+                <table width="230"; style="margin: 0 auto;text-indent: 26px;text-align: left;" TABLE-ATTRIBUTES border=3px solid white>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="edit" type="radio" name="radio" value="/add-flights">
+                            <strong>Add New Flights</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="edit" type="radio" name="radio" value="/update-flights">
+                            <strong> Update Flight Info</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="edit" type="radio" name="radio" value="/add-airplane">
+                            <strong> Add New Airplane</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="edit" type="radio" name="radio" value="/add-airport">
+                            <strong> Add New Airport</strong>
+                        </td>
+                    </tr>
+                </table>
+                <button id="edit_button" type="button" style="font-size: 16px" onclick="direct()"><strong>Go</strong></button>
+            </div><br>
+            <p1 style="font-size: 24px"><strong>Analysis Toolbox</strong></p1>
+            <div>
+                <table width="250"; style="margin: 0 auto;text-indent: 23px;text-align: left;" TABLE-ATTRIBUTES border=3px solid white>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="analysis" type="radio" name="radio" value="/report">
+                            <strong>Sales Report Analysis</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="analysis" type="radio" name="radio" value="/top-destination">
+                            <strong>Popular Destinations</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="analysis" type="radio" name="radio" value="/view-agent">
+                            <strong>Star Booking Agent</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 16px">
+                            <input class="analysis" type="radio" name="radio" value="/view-cust">
+                            <strong>Star Customer</strong>
+                        </td>
+                    </tr>
+                </table>
+                <button id="analysis_button" type="button" style="font-size: 16px" onclick="direct()"><strong>Go</strong></button>
+            </div>
+        </div>
+        <script>
+            function direct(){
+                var edit = document.getElementsByClassName("edit");
+                var ana = document.getElementsByClassName("analysis");
+                for(i = 0; i < edit.length; i++) { 
+                    if(edit[i].checked){
+                        window.location.href=edit[i].value
+                    }
+                }
+                for(i = 0; i < ana.length; i++) { 
+                    if(ana[i].checked){
+                        window.location.href=ana[i].value
+                    }
+                }
+            }
+        </script>
+        <div class="right">
+            <div><p1 style="font-size: 24px"><strong>Upcoming Flights (In 30 Days):</strong></p1></div>
+            <div class="container view-upcoming-flight" id="view-upcoming-flights">
+                <div id="view-upcoming-flight">
+                    <ul class="view-upcoming-flight list-group list-group-flush";>
+                    {% if upcoming_flights %}
+                        <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>                    
+                            <th>Airline</th>
+                            <th>Flight Number</th>
+                            <th>Status</th>
+                            <th>Airplane ID</th>
+                            <th>Depature Airport</th>
+                            <th>Departure Time</th>
+                            <th>Arrival Airport</th>                   
+                            <th>Arrival Time</th>
+                            <th>Price</th>
+                            {% for upcoming_flight in upcoming_flights %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">                                                         
+                                <td>{{ upcoming_flight['airline_name'] }}</td>
+                                <td>{{ upcoming_flight['flight_num'] }}</td>
+                                <td>{{ upcoming_flight['status'] }}</td>
+                                <td>{{ upcoming_flight['airplane_id'] }}</td>
+                                <td>{{ upcoming_flight['departure_airport'] }}</td>
+                                <td>{{ upcoming_flight['departure_time'] }}</td>
+                                <td>{{ upcoming_flight['arrival_airport'] }}</td>
+                                <td>{{ upcoming_flight['arrival_time'] }}</td>   
+                                <td>{{ upcoming_flight['price'] }}</td>                           
+                            </tr> 
+                            {% endfor %}   
+                        </table>
+                    </ul>
+                    {% else %}
+                    <p0 style="font-size: 18px">No upcoming flights :(</p0>
+                    {% endif %}                 
+                </div>  
+            </div>
+            <hr class="style-two"/>
+            <p3 style="font-size: 24px"><strong>Check Flight Status: </strong></p3>
+            <div>
+                <input type="text" class="form-control" name="flight_num" placeholder="Flight Number">
+
+                <input type="text" onfocus="(this.type='date')" class="form-control" name="dep_time" placeholder="Departure Date">
+
+                <input type="text" onfocus="(this.type='date')" class="form-control" name="arri_time" placeholder="Arrival Date" aria-label="Search term" aria-describedby="basic-addon" value="">
+                <button class="btn btn-light btn-block" style="font-size: 16px" type="submit" onclick="">
+                    <strong>Go</strong>
+                </button>
+            </div>
+            <div class="container search-flight" id="check_for_flights">
+                <div id="check_result">
+                    <ul class="check-flight list-group list-group-flush">       
+                        {% if check_results %}             
+                                <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>
+                                    <th>Status</th>
+                                    <th>Airline</th>
+                                    <th>Flight Number</th>
+                                    <th>Airplane ID</th>
+                                    <th>Depature Airport</th>
+                                    <th>Departure Time</th>
+                                    <th>Arrival Airport</th>                   
+                                    <th>Arrival Time</th>
+                                    {% for check in check_results %}
+                                    <tr TABLE-CELL-ATTRIBUTES align="center">      
+                                        <td>{{ check['status'] }}</td>                         
+                                        <td>{{ check['airline_name'] }}</td>
+                                        <td>{{ check['flight_num'] }}</td>
+                                        <td>{{ check['airplane_id'] }}</td>
+                                        <td>{{ check['departure_airport'] }}</td>
+                                        <td>{{ check['departure_time'] }}</td>
+                                        <td>{{ check['arrival_airport'] }}</td>
+                                        <td>{{ check['arrival_time'] }}</td>                                
+                                    </tr> 
+                                    {% endfor %}                          
+                                </table> 
+                        {% endif %}                       
+                    </ul>
+                </div>       
+            </div>
+            <hr class="style-two"/>
+            <div><p1 style="font-size: 24px"><strong>All Flights Info Check (Past To Future):</strong></p1></div>
+            <div>
+                <p2 style="font-size: 18px"><strong>Departure Date From</strong></p2>
+                <input id="start" type="date" name="start_date" class="form-control"
+                            placeholder="From"
+                            aria-label="Search term"
+                            aria-describedby="basic-addon" value="">
+                <p2 style="font-size: 18px"><strong>To</strong></p2>
+                <input id="end" type="date" name="end_date" class="form-control"
+                            placeholder="To"
+                            aria-label="Search term"
+                            aria-describedby="basic-addon" value="">
+            </div>
+            <div style="text-indent: 121px;">
+                <p2 style="font-size: 18px"><strong>Travel From</strong></p2>
+                <input type="text" class="form-control" name="source_airport"
+                        placeholder="Departure Airport" aria-label="Search term"
+                        aria-describedby="basic-addon" value="">
+                <p2 style="font-size: 18px"><strong>To</strong></p2>
+                <input type="text" class="form-control" name="arrival_airport"
+                        placeholder="Arrival Airport" aria-label="Search term"
+                        aria-describedby="basic-addon" value="">
+                <button class="btn btn-light btn-block" style="font-size: 16px" type="submit" onclick=""><strong>Go</strong></button>
+            </div>
+            <div class="container view-upcoming-flight" id="view-upcoming-flights">
+                <div id="view-upcoming-flight">
+                    <ul class="view-upcoming-flight list-group list-group-flush";>
+                    {% if all_flights %}
+                        <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>                    
+                            <th>Airline</th>
+                            <th>Flight Number</th>
+                            <th>Status</th>
+                            <th>Airplane ID</th>
+                            <th>Depature Airport</th>
+                            <th>Departure Time</th>
+                            <th>Arrival Airport</th>                   
+                            <th>Arrival Time</th>
+                            <th>Price</th>
+                            {% for all_flight in all_flights %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">                                                         
+                                <td>{{ all_flight['airline_name'] }}</td>
+                                <td>{{ all_flight['flight_num'] }}</td>
+                                <td>{{ all_flight['status'] }}</td>
+                                <td>{{ all_flight['airplane_id'] }}</td>
+                                <td>{{ all_flight['departure_airport'] }}</td>
+                                <td>{{ all_flight['departure_time'] }}</td>
+                                <td>{{ all_flight['arrival_airport'] }}</td>
+                                <td>{{ all_flight['arrival_time'] }}</td>   
+                                <td>{{ all_flight['price'] }}</td>                           
+                            </tr> 
+                            {% endfor %}   
+                        </table>
+                    </ul>
+                    {% endif %}                 
+                </div>    
+            </div>
+            <hr class="style-two"/>
+            <div><p1 style="font-size: 24px"><strong>View Customer List:</strong></p1></div>
+            <div class="row">
+                <p2 style="font-size: 18px"><strong>Customers that booked flight</strong></p2>
+                <input type="text" class="form-control" name="cust_flight_num"
+                        placeholder="Flight Number" aria-label="Search term"
+                        aria-describedby="basic-addon" value="">
+                <button class="btn btn-light btn-block" style="font-size: 16px" type="submit" onclick="">
+                    <strong>Go</strong>
+                </button>
+                <div class="container search-flight" id="search_for_flights">
+                    <div id="search_result">
+                        <ul class="seach-flight list-group list-group-flush";>
+                        {% if cust_lists %}   
+                            <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>    
+                                <th>Customer Email</th>                  
+                                <th>Purchase Date</th>
+                                {% for cust_list in cust_lists %} 
+                                <tr TABLE-CELL-ATTRIBUTES align="center">
+                                    <td>{{ cust_list['customer_email'] }}</td>                                                           
+                                    <td>{{ cust_list['purchase_date'] }}</td>                            
+                                </tr> 
+                                {% endfor %}   
+                            </table>                   
+                        </ul>
+                        {% endif %}  
+                    </div>
+                </div>   
+            </div>
+        </div>
+    </form>
+</body>
+</html>

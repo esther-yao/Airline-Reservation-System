@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add New Airplane</title>
+    <style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+    </style>
+</head>
+<body>
+	{% with messages = get_flashed_messages() %}
+  		{% if messages %}
+			<script>
+				var messages = "{{ messages[0] | safe }}";
+				  alert(messages);
+			</script>
+  		{% endif %}
+    {% endwith %}
+    <h1>Add A New Airplane</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div>
+    <div class="row justify-content-center">
+        <form action="/add-airplane" class="form" method="POST">
+
+            <label for="airplane_id"><strong>Airplane ID:</strong></label>
+            <input size="40"
+                    style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; width: 260px;"
+                    type="number" id="airplane_id" name="airplane_id" class="form-control"
+                    placeholder="not greater than 11 digits" required="" max="99999999999" min="0">
+            <br/><br/>
+            
+            <label for="seat"><strong>Total Seats: </strong></label>
+            <input size="40"
+                    style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; width: 260px;"
+                    type="number" id="seat" name="seat" class="form-control" placeholder="not greater than 11 digits"
+                    max='99999999999' min="1" required="">
+            <br/><br/>
+
+            <button class="btn btn-lg btn-secondary btn-block" type="submit" value="Add"><strong>Add</strong></button>
+        </form>
+    </div>
+</body>
+</html>

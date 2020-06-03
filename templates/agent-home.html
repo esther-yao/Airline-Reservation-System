@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="static/js/echarts.min.js"></script>
+    <title>Agent Home Page</title>
+    <style>
+        hr.style-two {
+            width: 85%;
+            border: 0;
+            height: 2.5px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0), rgb(32, 84, 139), rgba(0,0,0,0));
+        }
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+        .left {
+            float: left;
+            width: 50%;
+            height: 400px;
+            left: 0;
+            color: black;
+        }
+        .right {
+            float: right;
+            width: 50%;
+            height: 400px;
+            left: 50%;
+            color: black;
+        }
+
+        .inputdate {
+            position: relative;
+            left: 20%;
+            color: black;
+        }
+        p2 {
+            position: absolute;
+            left: 25%;
+            margin-right: -75%;
+            transform: translate(-50%, -50%);
+            color: black;
+        }
+
+        p3 {
+            position: absolute;
+            left: 75%;
+            margin-right: -25%;
+            transform: translate(-50%, -50%);
+            color: black;
+        }
+
+        .graph1 {
+            float: left;
+            width: 100%;
+            height: 300px;
+            left: 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Welcome, Agent No. {{ user_name }}</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div><br><br>
+
+    <form method="POST" action="/agent-home">
+        <center>
+        <div class="row">
+            <p1 style="font-size: 24px"><strong>Customer List</strong></p1>
+        </div>
+        <div id="no-booked">
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <script>
+                var messages = "{{ messages[0] | safe }}";
+                var x = document.createElement("STRONG");
+                var t = document.createTextNode(messages);
+                x.appendChild(t);
+                document.getElementById("no-booked").appendChild(x);
+        </script>
+        {% endif %}
+        {% endwith %}
+        <div class="container customer_list" id="customer_list">
+            <div id="cus_list">
+                    {% if cus_list %} 
+                    <div>
+                        <table TABLE-ATTRIBUTES border=3px solid white>
+                            <th>Customer Name</th>
+                            <th>Customer Email</th>
+                            {% for cus in cus_list %}
+                                <tr TABLE-CELL-ATTRIBUTES align="center"></tr>
+                                    <td>{{ cus['name'] }}
+                                        <button id="{{ loop.index }}" type="button" onclick="adddetail(this.id);"><strong>detail</strong></button>
+                                    </td>
+                                    <td>{{ cus['customer_email'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div><br>
+                    {% for cus in cus_list %}
+                    <div class="container search-flight-agent" id="{{ loop.index }}" style="display: none;">
+                        <div id="search_result">
+                            <ul class="seach-flight list-group list-group-flush";>
+                                {% if search_results %}   
+                                    <table TABLE-ATTRIBUTES border=3px solid white>  
+                                        <th>Customer Email</th>
+                                        <th>Customer Name</th>  
+                                        <th>Purchase Date</th>                  
+                                        <th>Airline</th>
+                                        <th>Flight Number</th>
+                                        <th>Status</th>
+                                        <th>Airplane ID</th>
+                                        <th>Depature Airport</th>
+                                        <th>Departure Time</th>
+                                        <th>Arrival Airport</th>                   
+                                        <th>Arrival Time</th>
+                                        {% for search in search_results %}
+                                            {% if search['cus_email'] == cus['customer_email'] %}
+                                            <tr TABLE-CELL-ATTRIBUTES align="center">
+                                                <td>{{ search['cus_email'] }}</td>
+                                                <td>{{ search['name'] }}</td>
+                                                <td>{{ search['purchase_date'] }}</td>
+                                                <td>{{ search['airline_name'] }}</td>
+                                                <td>{{ search['flight_num'] }}</td>
+                                                <td>{{ search['status'] }}</td>
+                                                <td>{{ search['airplane_id'] }}</td>
+                                                <td>{{ search['departure_airport'] }}</td>
+                                                <td>{{ search['departure_time'] }}</td>
+                                                <td>{{ search['arrival_airport'] }}</td>
+                                                <td>{{ search['arrival_time'] }}</td>                              
+                                            </tr> 
+                                            {% endif %}
+                                        {% endfor %} 
+                                    </table>
+                                {% endif %}                   
+                        </div>       
+                    </div>
+                    {% endfor %}
+                    {% endif %}                   
+            </div>   
+        </div>
+        <div>
+            <p0 style="font-size: 18px"><strong>Check Flights Info & Book for your clients</strong></p0>
+            <button id="purchase_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/purchase'"><em><strong>Check and Book!</strong></em></button>
+        </div>
+        <hr class="style-two"/><br>
+    </center>
+    <div class="left" id="left">
+        <p2 style="font-size: 24px"><strong>My Top Customers</strong></p2>
+        <label for="kind" style="font-size: 18px"><strong>Based On: </strong></label>
+        <select id="kind" style="font-size: 14px" onchange="newGraph()">
+            <option value="amount">Ticket Amount</option>
+            <option value="commi">Commission</option>
+        </select><br>
+        <script>
+            var cus = [];
+            var comm = [];
+            var ccus = [];
+            var nump = [];
+        </script>
+        {% if commission %}
+            {% for commi in commission %}
+                <script>
+                    cus.push("{{ commi['name'] }}");
+                    comm.push("{{ commi['commission'] }}");
+                </script>
+            {% endfor %}
+        {% endif %}
+        {% if num_pur %}
+            {% for num in num_pur %}
+                <script>
+                    ccus.push("{{ num['name'] }}");
+                    nump.push("{{ num['num_purchased'] }}");
+                </script>
+            {% endfor %}
+        {% endif %}
+        <div class="graph1" id="main"></div>
+    </div>
+    <script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'));
+    function newGraph(){
+        var xdata, ydata, bartype;
+        if (document.getElementById("kind").value=="amount"){
+            bartype = ['Amount Purchased (Last 6 months)'];
+            xdata = ccus;
+            ydata = nump;
+        } else if (document.getElementById("kind").value=="commi") {
+            bartype = ['Commission (Last year)'];
+            xdata = cus;
+            ydata = comm;
+        }
+
+        var option = {
+
+            title: {
+                text: 'Top 5 Customers',
+            },
+            tooltip: {},
+            legend: {
+                data: bartype
+            },
+            xAxis: {
+                data: xdata
+            },
+            yAxis: {},
+            series: [{
+                color: ["#316bc2"],
+                name: bartype[0],
+                type: 'bar',
+                data: ydata
+            }],
+            animationDurationUpdate: function (idx) {
+                return idx * 500;
+                }
+            };
+
+            myChart.setOption(option);
+        }
+    </script>
+    <div class="right">
+        <div class="row">
+        <p3 style="font-size: 24px"><strong>My Commissions</strong></p3><br>
+        <div class="inputdate">
+        <p4 style="font-size: 18px"><strong>Start From</strong></p4>
+        <input id="start" type="date" name="start_date" class="form-control"
+                placeholder="From"
+                aria-label="Search term"
+                aria-describedby="basic-addon" value="">
+        <script>
+        var d = new Date();
+        d.setMonth(d.getMonth()-1);
+        document.getElementById('start').value = d.toISOString().substring(0, 10);
+        console.log(document.getElementById('start').value);
+        </script>
+        <p4 style="font-size: 18px"><strong>To</strong></p4>
+        <input id="end" type="date" name="end_date" class="form-control"
+                placeholder="To"
+                aria-label="Search term"
+                aria-describedby="basic-addon" value="">
+        <script>document.getElementById('end').value = new Date().toISOString().substring(0, 10);
+        console.log(document.getElementById('end').value);
+        </script>
+        <button class="btn btn-light btn-block" type="submit" style="font-size: 18px" onclick="">
+            <strong>Go</strong>
+        </button><br><br>
+        </div>
+        {% if start_date and end_date %}
+            <script>
+            document.getElementById('start').value = "{{ start_date | safe }}";
+            document.getElementById('end').value =  "{{ end_date | safe }}";
+            </script>
+            {% if output %}
+            <ul style="list-style-type:square; font-size: 18px;">
+                <li><strong>My total commissions during the period: ${{ output['total_com'] }}</strong></li><br>
+                <li><strong>My average commissions per ticket during the period: ${{ output['avg_com'] }}</strong></li><br>
+                <li><strong>My total number of tickets sold during the period: {{ output['ticket_sales'] }}</strong></li>
+            </ul>
+            {% else %}
+            <ul style="list-style-type:square; font-size: 18px;">
+                <li><strong>No booking services provided to customers during the period.</strong></li><br>
+            </ul>
+            {% endif %}
+        {% endif %}
+    </div>
+    </div>
+    </form>
+    <script>
+    function adddetail(button_id) {
+        var searchdiv = document.getElementsByClassName("container search-flight-agent");
+        for (var i=0; i<searchdiv.length; i++){
+            if (searchdiv[i].id == button_id){
+                if (searchdiv[i].style.display == "none") {
+                    searchdiv[i].style.display = "block";
+                } else {
+                    searchdiv[i].style.display = "none";
+                }
+            }
+            else {
+                searchdiv[i].style.display = "none";
+            }
+        }
+    }
+    </script>
+    <script>
+        newGraph();
+    </script>
+</body>
+
+</html>

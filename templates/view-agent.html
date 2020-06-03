@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Booking Agents</title>
+    <script src="static/js/echarts.min.js"></script>
+    <style>
+        hr.style-two {
+            width: 85%;
+            border: 0;
+            height: 2.5px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0), rgb(32, 84, 139), rgba(0,0,0,0));
+        }
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+        .left {
+            float: left;
+            width: 50%;
+            height: 400px;
+            left: 0;
+            color: black;
+        }
+        .right {
+            float: right;
+            width: 50%;
+            height: 400px;
+            left: 50%;
+            color: black;
+        }
+
+        .inputdate {
+            position: relative;
+            left: 20%;
+            color: black;
+        }
+        p2 {
+            position: absolute;
+            left: 25%;
+            margin-right: -75%;
+            transform: translate(-50%, -50%);
+            color:white;
+        }
+
+        p3 {
+            position: absolute;
+            left: 75%;
+            margin-right: -25%;
+            transform: translate(-50%, -50%);
+            color: white;
+        }
+
+        .graph1 {
+            float: left;
+            width: 100%;
+            height: 300px;
+            left: 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+          var messages = "{{ messages[0] | safe }}";
+            alert(messages);
+      </script>
+    {% endif %}
+    {% endwith %}
+    <center>
+    <h1>Star Booking Agent</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div><br><br>
+        <div class="left">
+        <label for="kind" style="font-size: 18px"><strong>Last 3 Months: Based On </strong></label>
+        <select id="kind" style="font-size: 14px" onchange="newGraph()">
+            <option value="sales">Sales</option>
+            <option value="commi">Commission</option>
+        </select><br>
+        <script>
+            var cus = [];
+            var comm = [];
+            var ccus = [];
+            var nump = [];
+        </script>
+        {% if sales_mon %}
+            {% for sales_m in sales_mon %}
+                <script>
+                    cus.push("{{ sales_m['email'] }}");
+                    nump.push("{{ sales_m['tickets'] }}");
+                </script>
+            {% endfor %}
+        {% endif %}
+        {% if com_mon %}
+            {% for com_m in com_mon %}
+                <script>
+                    ccus.push("{{ com_m['email'] }}");
+                    comm.push("{{ com_m['commission'] }}");
+                </script>
+            {% endfor %}
+        {% endif %}
+        <div class="graph1" id="main" style="width: 100%;height:300px;"></div>
+        </div>
+        <div class="right">
+        <label for="year" style="font-size: 18px"><strong>Last Year: Based On </strong></label>
+        <select id="year" style="font-size: 14px" onchange="newGraph_1()">
+            <option value="sales_y">Sales</option>
+            <option value="commi_y">Commission</option>
+        </select><br><br>
+        <script>
+            var cus_y = [];
+            var comm_y = [];
+            var ccus_y = [];
+            var nump_y = [];
+        </script>
+        {% if sales_year %}
+            {% for sales_y in sales_year %}
+                <script>
+                    cus_y.push("{{ sales_y['email'] }}");
+                    nump_y.push("{{ sales_y['tickets'] }}");
+                </script>
+            {% endfor %}
+        {% endif %}
+        {% if com_year %}
+            {% for com_y in com_year %}
+                <script>
+                    ccus_y.push("{{ com_y['email'] }}");
+                    comm_y.push("{{ com_y['commission'] }}");
+                </script>
+            {% endfor %}
+        {% endif %}
+        <div class="graph2" id="main_1" style="width: 100%;height:300px;"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'));
+    function newGraph(){
+        var xdata, ydata, bartype;
+        if (document.getElementById("kind").value=="sales"){
+            bartype = ['Sales'];
+            xdata = ccus;
+            ydata = nump;
+        } else if (document.getElementById("kind").value=="commi") {
+            bartype = ['Commission Received'];
+            xdata = cus;
+            ydata = comm;
+        }
+
+        var option = {
+
+            title: {
+                text: 'Last 3 Months',
+            },
+            tooltip: {},
+            legend: {
+                data: bartype
+            },
+            xAxis: {
+                data: xdata
+            },
+            yAxis: {},
+            series: [{
+                color: ["#316bc2"],
+                name: bartype[0],
+                type: 'bar',
+                data: ydata
+            }],
+            animationDurationUpdate: function (idx) {
+                return idx * 500;
+                }
+            };
+
+            myChart.setOption(option);
+        }
+    </script><script>newGraph();</script>
+    <script type="text/javascript">
+        var myChart_1 = echarts.init(document.getElementById('main_1'));
+        function newGraph_1(){
+        var xdata_1, ydata_1, bartype_1;
+        if (document.getElementById("year").value=="sales_y"){
+            bartype_1 = ['Sales'];
+            xdata_1 = ccus_y;
+            ydata_1 = nump_y;
+        } else if (document.getElementById("year").value=="commi_y") {
+            bartype_1 = ['Commission Received'];
+            xdata_1 = cus_y;
+            ydata_1 = comm_y;
+        }
+
+        var option_1 = {
+
+            title: {
+                text: 'Last Year',
+            },
+            tooltip: {},
+            legend: {
+                data: bartype_1
+            },
+            xAxis: {
+                data: xdata_1
+            },
+            yAxis: {},
+            series: [{
+                color: ["#316bc2"],
+                name: bartype_1[0],
+                type: 'bar',
+                data: ydata_1
+            }],
+            animationDurationUpdate: function (idx) {
+                return idx * 500;
+                }
+            };
+
+            myChart_1.setOption(option_1);
+        }
+        </script><script>newGraph_1();</script>
+</div>
+</center><br>
+</body>
+</html>

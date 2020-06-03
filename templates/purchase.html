@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Upcoming Flights</title>
+    <style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+        </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <script>
+            var messages = "{{ messages[0] | safe }}";
+                alert(messages);
+        </script>
+        {% endif %}
+    {% endwith %}
+    {% if user_type == 'customer' %}
+        <h1>Hello, {{ user_name }}</h1>
+    {% elif user_type == 'agent' %}
+        <h1>Hello, Agent No. {{ user_name }}</h1>
+    {% endif %}
+    <div class style="position: absolute; top: 1; right: 0">
+        {% if user_type == 'customer' %}
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/customer-home'"><em><strong>Back</strong></em></button>
+        {% elif user_type == 'agent' %}
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/agent-home'"><em><strong>Back</strong></em></button>
+        {% endif %}
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div>
+    <div class="row justify-content-center">
+        <form action="/purchase" class="form" method="POST">
+        <div class="container" style="padding-top: 42px;">
+            <div class="row" style="text-align: center;">
+                <p style="font-size: 18px;"><strong>Search For All Upcoming Flights</strong></p>
+            </div>
+        </div>
+        
+        <div class="row" style="text-align: center;">
+            <input id="dept_airport" type="text" class="form-control" name="source_airport" placeholder="Departure Airport">
+
+            <input id="arri_airport" type="text" class="form-control" name="dest_airport" placeholder="Arrival Airport">
+            {% if user_type == 'agent' %}
+            <input id="cus_email" type="text" class="form-control" name="cust_email" placeholder="Customer Email">
+            {% endif %}
+            <input id="dept_date" type="text" onfocus="(this.type='date')" class="form-control" name="airport_time" placeholder="Departure Date" aria-label="Search term" aria-describedby="basic-addon" value="">
+            <button class="btn btn-light btn-block" type="submit" style="font-size: 18px" onclick="" name="search">
+                <strong>Search</strong>
+            </button>
+        </div>
+           
+        <div class="container search-flight" id="search_for_flights">
+            <div id="search_upcoming">
+                <ul class="seach-flight list-group list-group-flush";>
+                    {% if search_upcoming %} 
+                    <center>
+                        <table TABLE-ATTRIBUTES border=3px solid white>
+                            <th>   </th>                   
+                            <th>Airline</th>
+                            <th>Flight Number</th>
+                            <th>Status</th>
+                            <th>Airplane ID</th>
+                            <th>Depature Airport</th>
+                            <th>Departure Time</th>
+                            <th>Arrival Airport</th>                   
+                            <th>Arrival Time</th>
+                            {% for item1 in search_upcoming %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">   
+                                <td><input class="form-check-input" type="checkbox" name="checkbox" id="{{ loop.index }}"></td>
+                                <script>
+                                    var air_name = "{{ item1['airline_name'] | safe }}";
+                                    var air_num = "{{ item1['flight_num'] | safe }}";
+                                    document.getElementById("{{ loop.index }}").value = air_name + ":" + air_num;
+                                </script>
+                                <td>{{ item1['airline_name'] }}</td>
+                                <td>{{ item1['flight_num'] }}</td>
+                                <td>{{ item1['status'] }}</td>
+                                <td>{{ item1['airplane_id'] }}</td>
+                                <td>{{ item1['departure_airport'] }}</td>
+                                <td>{{ item1['departure_time'] }}</td>
+                                <td>{{ item1['arrival_airport'] }}</td>
+                                <td>{{ item1['arrival_time'] }}</td>                              
+                            </tr> 
+                            <script>
+                            var deptime = "{{ item1['departure_time'] | safe }}".substring(0, 10)
+                            document.getElementById("dept_airport").value = "{{ item1['departure_airport'] | safe }}";
+                            document.getElementById("arri_airport").value = "{{ item1['arrival_airport'] | safe }}";
+                            document.getElementById("dept_date").value = deptime;
+                            </script>
+                            {% if user_type == 'agent' %}
+                                <script>document.getElementById("cus_email").value = "{{ cus_email | safe }}";</script>
+                            {% endif %}
+                            {% endfor %}   
+                        </table><br>
+                        <button class="btn btn-lg btn-secondary btn-block" style="font-size: 18px" type="submit" onclick="return doubleCheck()" name="purchase"><strong>Book Now!</strong></button>
+                    </center>
+                    {% endif %}                   
+                </ul>
+            </div>       
+            </div>
+    </form>
+    </div>
+    <script>
+        var count = 0;
+        function doubleCheck() {
+            for(var i=1; i<=document.getElementsByClassName("form-check-input").length; i++){
+                if(document.getElementById(i.toString()).checked) {
+                    count = count + 1;
+                }
+            }
+            if(confirm("You have chosen " + count + " ticket(s). Are you sure about your purchase?")){
+                return true;
+            }
+            else {
+                alert("You've decided to cancel the order!");
+                for(var i=1; i<=document.getElementsByClassName("form-check-input").length; i++){
+                    document.getElementById(i.toString()).checked = false;
+                }
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

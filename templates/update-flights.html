@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Flight Status</title>
+    <style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+          var messages = "{{ messages[0] | safe }}";
+            alert(messages);
+      </script>
+    {% endif %}
+    {% endwith %}
+
+    <h1>Update Flight Status</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div>
+
+    <div class="container" style="padding-top: 42px;">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-lg-12">
+                <p style="font-size: 18px;"><strong>Check Flight's Current Status</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <form method="POST" action="/update-flights">
+        <div class="row">
+            <input type="text" class="form-control" name="flight_num" placeholder="Flight Number">
+
+            <input type="text" onfocus="(this.type='date')" class="form-control" name="dep_time" placeholder="Departure Date">
+
+            <input type="text" onfocus="(this.type='date')" class="form-control" name="arri_time" placeholder="Arrival Date" aria-label="Search term" aria-describedby="basic-addon" value="">
+            <input type="text" class="form-control" name="updated-status" placeholder="Updated Status">
+            <button class="btn btn-light btn-block" type="submit" onclick="">
+                <strong>Update</strong>
+            </button>
+        </div>   
+        
+        <div class="container search-flight" id="check_for_flights">
+            <div id="check_result">   
+                    {% if check_results %} 
+                        <ul>           
+                            <table TABLE-ATTRIBUTES border=3px solid white>
+                                <th style="color: red;">Updated Status</th>
+                                <th>Airline</th>
+                                <th>Flight Number</th>
+                                <th>Depature Airport</th>
+                                <th>Departure Time</th>
+                                <th>Arrival Airport</th>                   
+                                <th>Arrival Time</th>
+                                {% for check in check_results %}
+                                <tr TABLE-CELL-ATTRIBUTES align="center">
+                                    <td>{{ check['status'] }}</td>   
+                                    <td>{{ check['airline_name'] }}</td>
+                                    <td>{{ check['flight_num'] }}</td>                          
+                                    <td>{{ check['departure_airport'] }}</td>
+                                    <td>{{ check['departure_time'] }}</td>
+                                    <td>{{ check['arrival_airport'] }}</td>
+                                    <td>{{ check['arrival_time'] }}</td>                                
+                                </tr> 
+                                {% endfor %}                          
+                            </table> 
+                        </ul>
+                        <p>The Flight Status has been successfully updated!</p>
+                    {% endif %}                    
+            </div>
+        </div>
+    </form>
+    <br>
+   
+</body>
+</html>

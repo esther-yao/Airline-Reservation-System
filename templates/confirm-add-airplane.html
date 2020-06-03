@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation Page</title>
+    <style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <script>
+            var messages = "{{ messages[0] | safe }}";
+                alert(messages);
+        </script>
+        {% endif %}
+    {% endwith %}
+    <center>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <h1 style="font-size: 200%">All Airplanes In Your Airline</h1>
+        </div>
+    </div>
+    </center>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div>
+
+    <div class="container search-flight" id="check_for_flights">
+        <center>
+        <div id="result">
+            <ul class="result list-group list-group-flush">       
+                {% if results %}
+                    <table TABLE-ATTRIBUTES border=3px solid white>
+                        <th>Airline Name</th>
+                        <th>Airplane ID</th>
+                        <th>Total Seats</th>
+                        {% for result in results %}
+                        <tr TABLE-CELL-ATTRIBUTES align="center">  
+                            <td>{{ result['airline_name'] }}</td>    
+                            <td>{{ result['airplane_id'] }}</td>                         
+                            <td>{{ result['seats'] }}</td>                              
+                        </tr> 
+                        {% endfor %}                          
+                    </table>           
+                {% endif %}                       
+            </ul>
+        </div> 
+        </center>      
+        </div>
+</body>
+</html>

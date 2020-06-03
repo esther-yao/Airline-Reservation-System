@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Add New Airport</title>
+        <style>
+                body {
+                    background: rgb(160, 186, 213);
+                    color: white;
+                    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+                }
+                table {
+                    background-color: whitesmoke;
+                    color: rgb(32, 84, 139);
+                }
+            </style>
+</head>
+<body>
+	{% with messages = get_flashed_messages() %}
+  		{% if messages %}
+			<script>
+				var messages = "{{ messages[0] | safe }}";
+				  alert(messages);
+			</script>
+  		{% endif %}
+    {% endwith %}
+    <h1>Add A New Airport</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div>
+    <div class="row justify-content-center">
+        <form action="/add-airport" class="form" method="POST">
+
+            <label for="airport_name"><strong>Airport Name:</strong></label>
+            <input size="40"
+                    style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                    type="text" id="airport_name" name="airport_name" class="form-control"
+                    placeholder="length smaller than 50" required="" maxlength="50">
+            <br/><br/>
+            
+            <label for="airport_city"><strong>Airport City:</strong></label>
+            <input size="40"
+                    style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                    type="text" id="airport_city" name="airport_city" class="form-control"
+                    placeholder="length smaller than 50" required="" maxlength="50">
+            <br/><br/>
+
+            <button class="btn btn-lg btn-secondary btn-block" type="submit" value="Add"><strong>Add</strong></button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="static/js/echarts.min.js"></script>
+    <title>Sales Report Analysis</title>
+    <style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+        .left {
+            float: left;
+            width: 50%;
+            height: 500px;
+            margin-right: -300px;
+            text-align:center;
+        }
+        .right {
+            float: right;
+            width: 50%;
+            /* height:auto !important; */
+            height: 500px;
+            /* min-height:500px; */
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+	{% with messages = get_flashed_messages() %}
+  		{% if messages %}
+			<script>
+				var messages = "{{ messages[0] | safe }}";
+				  alert(messages);
+			</script>
+  		{% endif %}
+    {% endwith %}
+    <h1>Sales Analysis</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div><br><br>
+    <form method="POST" action="/report">
+        <div class="left">
+            <p1 style="font-size: 24px"><strong>Ticket Sales</strong></p1>
+            <div>
+                <p2 style="font-size: 18px"><strong>Start From</strong></p2>
+                <input id="start" type="date" name="start_date" class="form-control"
+                    placeholder="From"
+                    aria-label="Search term"
+                    aria-describedby="basic-addon" value="">
+                <script>
+                    var oneYearBefore = new Date();
+                    oneYearBefore.setFullYear(oneYearBefore.getFullYear() - 1);
+                    document.getElementById('start').value = oneYearBefore.toISOString().substring(0, 10);</script>
+                    <p2 style="font-size: 18px"><strong>To</strong></p2>
+                    <input id="end" type="date" name="end_date" class="form-control"
+                            placeholder="To"
+                            aria-label="Search term"
+                            aria-describedby="basic-addon" value="">
+                <script>
+                document.getElementById('end').value = new Date().toISOString().substring(0, 10);</script>
+                <button class="btn btn-light btn-block" type="submit" style="font-size: 18px" onclick=""><strong>Go</strong></button><br><br>
+                {% if start_date and end_date %}
+                    <script>
+                        document.getElementById('start').value = "{{ start_date | safe }}";
+                        document.getElementById('end').value =  "{{ end_date | safe }}";
+                        var time = [];
+                        var sale = [];
+                    </script>
+                        {% if sales %}
+                            {% for mon in sales %}
+                                <script>
+                                time.push("{{ mon['index'] }}");
+                                sale.push("{{ mon['ticketsales'] | int }}");
+                                </script>
+                            {% endfor %}
+                        {% else %}
+                            <p1 style="font-size: 18px"><strong>There is no ticket sold during this period.</strong></p1>
+                        {% endif %}
+                        <center>
+                            <div id="main" style="width: 600px;height:350px;"></div>
+                        </center>
+                        <script type="text/javascript">
+                            var myChart = echarts.init(document.getElementById('main'));
+                            var option = {
+
+                                title: {
+                                    text: 'Monthly Ticket Sales',
+                                },
+                                tooltip: {},
+                                legend: {
+                                    data:['Ticket Sales']
+                                },
+                                xAxis: {
+                                    data: time
+                                },
+                                yAxis: {},
+                                series: [{
+                                    color: ["#316bc2"],
+                                    name: 'Ticket Sales',
+                                    type: 'bar',
+                                    data: sale
+                                }],
+                                animationDurationUpdate: function (idx) {
+                                return idx * 500;
+                                }
+                            };
+                    
+                            myChart.setOption(option);
+                        </script>
+                {% endif %}
+            </div>
+        </div>
+        <div class = "right">
+            <p1 style="font-size: 24px"><strong>Revenue Analysis</strong></p1>
+            <div>
+                <p2 style="font-size: 18px"><strong>Start From</strong></p2>
+                <input id="s" type="date" name="s_date" class="form-control"
+                    placeholder="From"
+                    aria-label="Search term"
+                    aria-describedby="basic-addon" value="">
+                <script>
+                    var oneYearBefore = new Date();
+                    console.log(oneYearBefore)
+                    oneYearBefore.setFullYear(oneYearBefore.getFullYear() - 1);
+                    console.log(oneYearBefore.toISOString())
+                    document.getElementById('s').value = oneYearBefore.toISOString().substring(0, 10);</script>
+                    <p2 style="font-size: 18px"><strong>To</strong></p2>
+                    <input id="e" type="date" name="e_date" class="form-control"
+                            placeholder="To"
+                            aria-label="Search term"
+                            aria-describedby="basic-addon" value="">
+                <script>
+                document.getElementById('e').value = new Date().toISOString().substring(0, 10);</script>
+                <button class="btn btn-light btn-block" type="submit" style="font-size: 18px" onclick=""><strong>Go</strong></button><br><br>
+                {% if s_date and e_date %}
+                    <script>
+                        document.getElementById('s').value = "{{ s_date | safe }}";
+                        document.getElementById('e').value =  "{{ e_date | safe }}";
+                        var type = ["direct", "indirect"]
+                        var rev = [{name: 'direct', value: 0}, {name: 'indirect', value: 0}];
+                    </script>
+                        {% if direct %}
+                            {% if indirect %}
+                            <script>
+                                for(r of rev){
+                                    if (r.name == 'direct'){
+                                        r.value = '{{ direct["direct_rev"] | round(2, "floor") }}'
+                                    }
+                                    if (r.name == 'indirect'){
+                                        r.value = '{{ indirect["indirect_rev"] | round(2, "floor") }}'
+                                    }
+                                }
+                                console.log(rev)
+                            </script>
+                            {% else %}
+                            <p1 style="font-size: 18px"><strong>There is no indirect sales during this period.</strong></p1>
+                            <script>
+                                rev.splice( rev.indexOf('indirect'), 1 );
+                            </script>
+                            {% endif %}
+                        {% else %}
+                            <p1 style="font-size: 18px"><strong>There is no direct sales during this period.</strong></p1><br>
+                            <script>
+                                rev.splice( rev.indexOf('direct'), 1 );
+                            </script>
+                            {% if indirect %}
+                            <script>
+                                for(r of rev){
+                                    if (r.name == 'indirect'){
+                                        r.value = '{{ indirect["indirect_rev"] | round(2, "floor") }}'
+                                    }
+                                }
+                            </script>
+                            {% else %}
+                            <p1 style="font-size: 18px"><strong>There is no indirect sales during this period.</strong></p1>
+                            <script>
+                                rev.splice( rev.indexOf('indirect'), 1 );
+                            </script>
+                            {% endif %}
+                        {% endif %}
+                        <center>
+                            <div id="main-1" style="width: 600px;height:350px;"></div>
+                        </center>
+                        <script type="text/javascript">
+                            var myChart1 = echarts.init(document.getElementById('main-1'));
+                            option1 = {
+                                title: {
+                                    text: 'Sales Revenue',
+                                    subtext: 'Direct vs. Indirect',
+                                    left: 'center'
+                                },
+                                tooltip: {
+                                    trigger: 'item',
+                                    formatter: '{a} <br/>{b} : {c} ({d}%)'
+                                },
+                                legend: {
+                                    orient: 'vertical',
+                                    left: 'left',
+                                    data: type
+                                },
+                                series: [
+                                    {
+                                        name: 'Sales Revenue',
+                                        type: 'pie',
+                                        radius: '55%',
+                                        center: ['50%', '60%'],
+                                        data: rev,
+                                        emphasis: {
+                                            itemStyle: {
+                                                shadowBlur: 10,
+                                                shadowOffsetX: 0,
+                                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                            }
+                                        }
+                                    }
+                                ]
+                            };
+                    
+                            myChart1.setOption(option1);
+                        </script>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+        div {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+          var messages = "{{ messages[0] | safe }}";
+            alert(messages);
+      </script>
+    {% endif %}
+    {% endwith %}
+    {% if user_type == 'customer' %}
+        <h1>Hello, {{ user_name }}</h1>
+    {% elif user_type == 'agent' %}
+        <h1>Hello, Agent No. {{ user_name }}</h1>
+    {% elif user_type == 'staff' %}
+        <h1>Hello, Mr. /Mrs. {{ user_name }}</h1>
+    {% endif %}
+    <div class style="position: absolute; top: 1; right: 0">
+        {% if user_type == 'customer' %}
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/customer-home'"><em><strong>Go Back</strong></em></button>
+        {% elif user_type == 'agent' %}
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/agent-home'"><em><strong>Go Back</strong></em></button>
+        {% elif user_type == 'staff' %}
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        {% endif %}
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div>
+    <form method="POST" action="/profile">
+        <div class="row">
+            <p1 style="font-size: 18px"><strong>My Profile Info: </strong></p1>
+        </div>
+        <div class="container profile_info" id="profile_info">
+            <div id="search_result">
+                    {% if user_type == 'customer' %}
+                        {% if search_results %}   
+                            <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ search_results['email'] }}</td>
+                                    </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td>{{ search_results['name'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Birthday</th>
+                                    <td id = "bd">{{ search_results['date_of_birth'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Passport No.</th>
+                                    <td id = "pspt">{{ search_results['passport_number'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Passport Expiration Date</th>
+                                    <td id = "psptexp">{{ search_results['passport_expiration'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Passport Country</th>
+                                    <td id = "psptctr">{{ search_results['passport_country'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Building No.</th>
+                                    <td id = "bno">{{ search_results['building_number'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Street</th>
+                                    <td id = "strt">{{ search_results['street'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>City</th>
+                                    <td id = "city">{{ search_results['city'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>State</th>
+                                    <td id = "state">{{ search_results['state'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Phone No.</th>
+                                    <td id = "phoneno">{{ search_results['phone_number'] }}</td>
+                                </tr>
+                            </table><br>
+                        {% endif %}
+                    {% elif user_type == 'agent' %}
+                        {% if search_results %}   
+                        <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ search_results['email'] }}</td>
+                                </tr>
+                            <tr>
+                                <th>Agent ID</th>
+                                <td>{{ search_results['booking_agent_id'] }}</td>
+                            </tr>
+                        </table>
+                        {% endif %}
+                    {% elif user_type == 'staff' %}
+                        {% if search_results %}   
+                            <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>
+                                <tr>
+                                    <th>Username</th>
+                                    <td>{{ search_results['username'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Airline Name</th>
+                                    <td>{{ search_results['airline_name'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Staff Name</th>
+                                    <td>{{ search_results['first_name'] }} {{ search_results['last_name'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Birthday</th>
+                                    <td>{{ search_results['date_of_birth'] }}</td>
+                                </tr>
+                            </table>
+                        {% endif %}
+                    {% endif %}                 
+            </div>
+        </div>
+        <div id="confirm">
+            {% if user_type == 'customer' %}
+                <button id="edit_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="edit()"><em><strong>Edit My Profile</strong></em></button>
+            {% endif %}
+        </div>
+        <script>
+            function edit(){
+                var bd = document.getElementById("bd").innerHTML;
+                var pspt = document.getElementById("pspt").innerHTML;
+                var psptexp = document.getElementById("psptexp").innerHTML;
+                var psptctr = document.getElementById("psptctr").innerHTML;
+                var bno = document.getElementById("bno").innerHTML;
+                var strt = document.getElementById("strt").innerHTML;
+                var city = document.getElementById("city").innerHTML;
+                var state = document.getElementById("state").innerHTML;
+                var phoneno = document.getElementById("phoneno").innerHTML;
+                
+                document.getElementById("bd").innerHTML      = "<input id='birthday'      type = 'date' required='' name='bthd' value='"+bd+"'/>";
+                document.getElementById("pspt").innerHTML    = "<input id='pspt1'    maxlength='30' required='' name='pspt1' value='"+pspt+"'/>";
+                document.getElementById("psptexp").innerHTML = "<input id='psptexp1' type = 'date' required='' name='psptexp1' value='"+psptexp+"'/>";
+                document.getElementById("psptctr").innerHTML = "<input id='psptctr1' maxlength='30' required='' name='psptctr1' value='"+psptctr+"'/>";
+                document.getElementById("bno").innerHTML     = "<input id='bno1'     maxlength='30' required='' name='bno1' value='"+bno+"'/>";
+                document.getElementById("strt").innerHTML    = "<input id='strt1'    maxlength='30' required='' name='strt1' value='"+strt+"'/>";
+                document.getElementById("city").innerHTML    = "<input id='city1'    maxlength='30' required='' name='city1' value='"+city+"'/>";
+                document.getElementById("state").innerHTML   = "<input id='state1'     maxlength='30' required='' name='state1' value='"+state+"'/>";
+                document.getElementById("phoneno").innerHTML = "<input id='phoneno1'   maxlength='11' required='' name='phoneno1' value='"+phoneno+"'/>";
+
+                var myDiv = document.getElementById("confirm"); 
+                var button = document.createElement('BUTTON');
+                button.innerHTML = '<em><strong>Confirm</strong></em>'
+                button.id = 'confirm_button'
+                button.type = 'submit'
+                button.style = "font-size: 16px"
+                myDiv.appendChild(button)
+            }
+        </script>
+    </form>
+        
+</body>
+</html>

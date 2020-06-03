@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="static/js/echarts.min.js"></script>
+    <title>Top Destinations</title>
+    <style>
+        hr.style-two {
+            width: 60%;
+            border: 0;
+            height: 2.5px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0), rgb(32, 84, 139), rgba(0,0,0,0));
+        }
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+
+        .left {
+            float: left;
+            width: 50%;
+            height: 500px;
+            margin-right: -300px;
+            text-align:center;
+        }
+
+        .right {
+            float: right;
+            width: 50%;
+            /* height:auto !important; */
+            height: 500px;
+            /* min-height:500px; */
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+          var messages = "{{ messages[0] | safe }}";
+            alert(messages);
+      </script>
+    {% endif %}
+    {% endwith %}
+
+    <h1>Top Destinations</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div><br><br>
+    
+    <form method="POST" action="/top-destination">
+        <div class="left">
+            <div><p1 style="font-size: 24px"><strong>Top Destinations: Past 3 Months</strong></p1></div><br>
+            <div class="container view-upcoming-flight" id="view-upcoming-flights">
+                <div id="view-upcoming-flight">
+                    {% if dest_mon %}
+                        <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>                    
+                            <th>Destination City</th>
+                            <th>Tickets Sold</th>
+                            {% for dest_m in dest_mon %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">                                                         
+                                <td>{{ dest_m['airport_city'] }}</td>
+                                <td>{{ dest_m['ticket_sold'] }}</td>                         
+                            </tr> 
+                            {% endfor %}   
+                        </table>
+                    {% else %}
+                    <p0 style="font-size: 18px">Not available :(</p0>
+                    {% endif %}                 
+                </div>
+            </div><br>
+            <hr class="style-two"/>
+            <div><p1 style="font-size: 24px"><strong>Top Destinations: Past Year</strong></p1></div><br>
+            <div class="container view-upcoming-flight" id="view-upcoming-flights">
+                <div id="view-upcoming-flight">
+                    {% if dest_year %}
+                        <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>                    
+                            <th>Destination City</th>
+                            <th>Tickets Sold</th>
+                            {% for dest_y in dest_year %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">                                                         
+                                <td>{{ dest_y['airport_city'] }}</td>
+                                <td>{{ dest_y['ticket_sold'] }}</td>                         
+                            </tr> 
+                            {% endfor %}   
+                        </table>
+                    {% else %}
+                    <p0 style="font-size: 18px">Not available :(</p0>
+                    {% endif %}                 
+                </div>    
+            </div><br>
+            <hr class="style-two"/>
+            <div><p1 style="font-size: 24px"><strong>Top Destinations: Custom Search</strong></p1></div>
+            <div class="row">
+                <p2 style="font-size: 18px"><strong>Date Starts From</strong></p2>
+                <input id="start" type="date" name="dest_start" class="form-control"
+                        placeholder="From"
+                        aria-label="Search term"
+                        aria-describedby="basic-addon" value="">
+                    <script>
+                        var oneYearBefore = new Date();
+                        oneYearBefore.setFullYear(oneYearBefore.getFullYear() - 1);
+                        document.getElementById('start').value = oneYearBefore.toISOString().substring(0, 10);</script>
+                        <p2 style="font-size: 18px"><strong>To</strong></p2>
+                        <input id="end" type="date" name="dest_end" class="form-control"
+                                placeholder="To"
+                                aria-label="Search term"
+                                aria-describedby="basic-addon" value="">
+                    <script>
+                    document.getElementById('end').value = new Date().toISOString().substring(0, 10);</script>
+                <button style="font-size: 16px" class="btn btn-light btn-block" type="submit" onclick="">
+                    <strong>View</strong>
+                </button>
+                <div class="container view-upcoming-flight" id="view-upcoming-flights"><br>
+                    <div id="view-upcoming-flight">
+                        {% if start_date and end_date %}
+                        <script>
+                        document.getElementById('start').value = "{{ start_date | safe }}";
+                        document.getElementById('end').value =  "{{ end_date | safe }}";
+                        </script>
+                        {% if dest_default %}
+                        <table style="margin: 0 auto"; TABLE-ATTRIBUTES border=3px solid white>                    
+                            <th>Destination City</th>
+                            <th>Tickets Sold</th>
+                            {% for dest_f in dest_default %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">                                                         
+                                <td>{{ dest_f['airport_city'] }}</td>
+                                <td>{{ dest_f['ticket_sold'] }}</td>                         
+                            </tr> 
+                            {% endfor %}   
+                        </table>
+                        {% endif %}   
+                        {% endif %}              
+                    </div>    
+                </div><br>
+            </div>
+        </div>
+        <div class="right">
+            <div><p1 style="font-size: 24px"><strong>Popular Destinations: Annual Analysis</strong></p1></div>
+            <select id="year" style="font-size: 14px" onchange="newGraph()"></select><br><br>
+            <script>
+                var current = new Date().getFullYear();
+                // var before = new Date().getFullYear() - 4; 
+                var before = new Date().getFullYear() - 1; 
+                var options = "";
+                for(var year = current; year >=before; year--){
+                    options += "<option value = '" + year + "'>"+ year +"</option>";
+                }
+                document.getElementById("year").innerHTML = options;
+            </script>
+            <center>
+            <div id="main" style="width: 600px;height:590px;"></div>
+            </center>
+        </div>
+        {% if result %}
+            <script>
+                var r = [];
+            </script>
+            {% for res in result %}
+            <script>
+                r.push({'year': "{{ res['year'] | safe }}", 'month': "{{ res['month'] | safe }}", 'airport_city': "{{ res['airport_city'] | safe }}", 'ticket_sold': "{{ res['ticket_sold'] | int }}"})
+            </script>
+            {% endfor%}
+        <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('main'));
+        </script>
+        {% else %}
+            <p1>No Ticket Sold this year.<p1>
+        {% endif %}
+    </form>
+    <script>
+        function newGraph(){
+                var choice = document.getElementById("year").value;
+                const allmonths = ['1','1','1','2','2','2','3','3','3','4','4','4','5','5','5','6','6','6','7','7','7','8','8','8','9','9','9','10','10','10','11','11','11','12','12','12']
+                if (choice == new Date().getFullYear()){
+                    var sub = [];
+                    var a = [];
+                    r.forEach(function(i){
+                        if(i.year == choice){
+                            sub.push(i)
+                        }
+                    })
+                    allmonths.forEach(mon => {
+                        const item = sub.find(item => item.month === mon);
+                        var index = sub.indexOf(item);
+                        
+                        if (item) {
+                            a.push(item);
+                            sub.splice(index, 1)
+                        } else {
+                            a.push({year: choice, month: mon, airport_city: '', ticket_sold: 0});
+                        }
+                    })
+                } 
+                else if (choice == new Date().getFullYear() - 1){
+                    var sub = [];
+                    var a = [];
+                    r.forEach(function(i){
+                        if(i.year == choice){
+                            sub.push(i)
+                        }
+                    })
+                    allmonths.forEach(mon => {
+                        const item = sub.find(item => item.month === mon);
+                        var index = sub.indexOf(item);
+                        
+                        if (item) {
+                            a.push(item);
+                            sub.splice(index, 1)
+                        } else {
+                            a.push({year: choice, month: mon, airport_city: '', ticket_sold: 0});
+                        }
+                    })
+                }
+                else {
+                    console.log(choice)
+                }
+                
+                var year = [];
+                var month = [];
+                var top = [];
+                var colors = ['#FFAE57', '#FF7868', '#EA5151', '#CC3F57', '#9A2555'];
+                var bgColor = '#a0bad5';
+
+                var itemStyle = {
+                    star1: {
+                        color: colors[4]
+                    },
+                    star2: {
+                        color: colors[2]
+                    },
+                    star3: {
+                        color: colors[1]
+                    }
+                };
+
+                var data = [{
+                    name: 'Q1',
+                    itemStyle: {
+                        color: colors[1]
+                    },
+                    children: [{
+                        name: 'Jan',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[0].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[1].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[2].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'Feb',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[3].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[4].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[5].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'Mar',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[6].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[7].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[8].airport_city
+                            }]
+                        }]
+                    }]
+                }, {
+                    name: 'Q2',
+                    itemStyle: {
+                        color: colors[2]
+                    },
+                    children: [{
+                        name: 'Apr',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[9].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[10].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[11].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'May',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[12].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[13].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[14].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'June',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[15].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[16].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[17].airport_city
+                            }]
+                        }]
+                    }]
+                }, {
+                    name: 'Q3',
+                    itemStyle: {
+                        color: colors[3]
+                    },
+                    children: [{
+                        name: 'Jul',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[18].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[19].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[20].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'Aug',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[21].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[22].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[23].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'Sep',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[24].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[25].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[26].airport_city
+                            }]
+                        }]
+                    }]
+                }, {
+                    name: 'Q4',
+                    itemStyle: {
+                        color: colors[4]
+                    },
+                    children: [{
+                        name: 'Oct',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[27].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[28].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[29].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'Nov',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[30].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[31].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[32].airport_city
+                            }]
+                        }]
+                    }, {
+                        name: 'Dec',
+                        children: [{
+                            name: '☆1',
+                            children: [{
+                                name: a[33].airport_city
+                            }]
+                        }, {
+                            name: '☆2',
+                            children: [{
+                                name: a[34].airport_city
+                            }]
+                        }, {
+                            name: '☆3',
+                            children: [{
+                                name: a[35].airport_city
+                            }]
+                        }]
+                    }]
+                }];
+
+                for (var j = 0; j < data.length; ++j) {
+                    var level1 = data[j].children;
+                    for (var i = 0; i < level1.length; ++i) {
+                        var block = level1[i].children;
+                        var bookScore = [];
+                        var bookScoreId;
+                        for (var star = 0; star < block.length; ++star) {
+                            var style = (function (name) {
+                                switch (name) {
+                                    case '☆1':
+                                        bookScoreId = 0;
+                                        return itemStyle.star1;
+                                    case '☆2':
+                                        bookScoreId = 1;
+                                        return itemStyle.star2;
+                                    case '☆3':
+                                        bookScoreId = 2;
+                                        return itemStyle.star3;
+                                }
+                            })(block[star].name);
+
+                            block[star].label = {
+                                color: style.color,
+                                downplay: {
+                                    opacity: 1
+                                }
+                            };
+
+                            if (block[star].children) {
+                                style = {
+                                    opacity: 1,
+                                    color: style.color
+                                };
+                                block[star].children.forEach(function (book) {
+                                    book.value = 1;
+                                    book.itemStyle = style;
+
+                                    book.label = {
+                                        color: style.color
+                                    };
+
+                                    var value = 1;
+                                    if (bookScoreId === 0 || bookScoreId === 2) {
+                                        value = 5;
+                                    }
+
+                                    if (bookScore[bookScoreId]) {
+                                        bookScore[bookScoreId].value += value;
+                                    }
+                                    else {
+                                        bookScore[bookScoreId] = {
+                                            color: colors[bookScoreId],
+                                            value: value
+                                        };
+                                    }
+                                });
+                            }
+                        }
+
+                            level1[i].itemStyle = {
+                                color: data[j].itemStyle.color
+                            };
+                        }
+                    }
+
+                    option = {
+                        backgroundColor: bgColor,
+                        color: colors,
+                        series: [{
+                            type: 'sunburst',
+                            center: ['50%', '45%'],
+                            data: data,
+                            sort: function (a, b) {
+                                if (a.depth === 1) {
+                                    return b.getValue() - a.getValue();
+                                }
+                                else {
+                                    return a.dataIndex - b.dataIndex;
+                                }
+                            },
+                            label: {
+                                rotate: 'radial',
+                                color: bgColor
+                            },
+                            itemStyle: {
+                                borderColor: bgColor,
+                                borderWidth: 2
+                            },
+                            levels: [{}, {
+                                r0: 0,
+                                r: 40,
+                                label: {
+                                    rotate: 0
+                                }
+                            }, {
+                                r0: 40,
+                                r: 105
+                            }, {
+                                r0: 115,
+                                r: 140,
+                                itemStyle: {
+                                    shadowBlur: 1,
+                                    shadowColor: colors[2],
+                                    color: 'transparent'
+                                },
+                                label: {
+                                    rotate: 'tangential',
+                                    fontSize: 10,
+                                    color: colors[0]
+                                }
+                            }, {
+                                r0: 140,
+                                r: 145,
+                                itemStyle: {
+                                    shadowBlur: 100,
+                                    shadowColor: colors[0]
+                                },
+                                label: {
+                                    position: 'outside',
+                                    textShadowBlur: 2,
+                                    textShadowColor: '#333',
+                                },
+                                downplay: {
+                                    label: {
+                                        opacity: 1
+                                    }
+                                }
+                            }]
+                        }]
+                    };
+
+                    myChart.setOption(option);
+                }
+    </script>
+    <script>newGraph();</script>
+    
+   
+</body>
+</html>

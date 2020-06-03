@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Register Page</title>
+	<style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+	{% with messages = get_flashed_messages() %}
+  		{% if messages %}
+			<script>
+				var messages = "{{ messages[0] | safe }}";
+				  alert(messages);
+			</script>
+  		{% endif %}
+	{% endwith %}
+    <div class="row justify-content-center">
+        <form action="/register-agent" class="form" method="POST">
+            <center>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <h1 style="font-size: 200%">Agent Registration</h1>
+                </div>
+            </div>
+
+            <label for="inputEmail"><strong>Email:</strong></label>
+            <input size="40"
+                    style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                    type="email" id="inputEmail" name="email" class="form-control"
+                    placeholder="length smaller than 50" required="" maxlength="50">
+            <br/><br/>
+
+            <label for="inputPassword"><strong>Password:</strong></label>
+            <input size="40"
+                    style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                    type="password" id="inputPassword" name="password" class="form-control"
+                    placeholder="length smaller than 50" required="" maxlength="50">
+            <br/><br/>
+            
+
+            <label for="inputAgentID"><strong>Booking Agent ID: </strong></label>
+            <input size="30"
+                    style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                    type="text" id="fullname" name="agent_ID" class="form-control"
+                    placeholder="length smaller than 11" required="" maxlength="11">
+            <br/><br/>
+
+            <button class="btn btn-lg btn-secondary btn-block" type="submit" value="Register"><strong>Register</strong></button>
+        <a href="/register">Go back</a>
+        </center>
+        </form>
+    </div>
+</body>
+</html>

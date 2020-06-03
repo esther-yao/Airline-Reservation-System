@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="static/js/echarts.min.js"></script>
+    <title>Customer Home Page</title>
+    <style>
+        hr.style-two {
+            width: 85%;
+            border: 0;
+            height: 2.5px;
+            background-image: linear-gradient(to right, rgba(0,0,0,0), rgb(32, 84, 139), rgba(0,0,0,0));
+        }
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+        p1,p2,p3 {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ user_name }}</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div><br><br>
+    <form method="POST" action="/customer-home">
+        <div class="row">
+            <center>
+            <div>
+            <p4 style="font-size: 24px"><strong>My Upcoming Flights </strong></p4>
+            </div>
+            <div id="no-booked">
+            </div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <script>
+                    var messages = "{{ messages[0] | safe }}";
+                    var x = document.createElement("STRONG");
+                    var t = document.createTextNode(messages);
+                    x.appendChild(t);
+                    document.getElementById("no-booked").appendChild(x);
+                </script>
+                {% endif %}
+            {% endwith %}
+            </center>
+        </div>
+        <center>
+        <div class="container search-flight" id="search_for_flights">
+            <div id="search_result">
+                <ul class="seach-flight list-group list-group-flush";>
+                 {% if search_results %}   
+                        <table TABLE-ATTRIBUTES border=3px solid white>    
+                            <th>Purchase Date</th>                  
+                            <th>Airline</th>
+                            <th>Flight Number</th>
+                            <th>Status</th>
+                            <th>Airplane ID</th>
+                            <th>Depature Airport</th>
+                            <th>Departure Time</th>
+                            <th>Arrival Airport</th>                   
+                            <th>Arrival Time</th>
+                            {% for search in search_results %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">
+                                <td>{{ search['purchase_date'] }}</td>                                                           
+                                <td>{{ search['airline_name'] }}</td>
+                                <td>{{ search['flight_num'] }}</td>
+                                <td>{{ search['status'] }}</td>
+                                <td>{{ search['airplane_id'] }}</td>
+                                <td>{{ search['departure_airport'] }}</td>
+                                <td>{{ search['departure_time'] }}</td>
+                                <td>{{ search['arrival_airport'] }}</td>
+                                <td>{{ search['arrival_time'] }}</td>                              
+                            </tr> 
+                            {% endfor %}   
+                        </table>
+                    {% endif %}
+                </ul>
+            </div>    
+        </div>
+        <div>
+            <p0 style="font-size: 18px"><strong>Wanna Check Out and Book More Flights?</strong></p0>
+            <button id="purchase_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/purchase'"><em><strong>Check It Out!</strong></em></button>
+        </div>
+        <hr class="style-two"/>
+        <p1 style="font-size: 24px"><strong>My Spending History </strong></p1>
+        </center>
+        <div class="row" style="text-align: center;">
+            <p2 style="font-size: 18px"><strong>Start From</strong></p2>
+            <input id="start" type="date" name="start_date" class="form-control"
+                    placeholder="From"
+                    aria-label="Search term"
+                    aria-describedby="basic-addon" value="">
+            <script>
+            var oneYearBefore = new Date();
+            console.log(oneYearBefore)
+            oneYearBefore.setFullYear(oneYearBefore.getFullYear() - 1);
+            console.log(oneYearBefore.toISOString())
+            document.getElementById('start').value = oneYearBefore.toISOString().substring(0, 10);</script>
+            <p2 style="font-size: 18px"><strong>To</strong></p2>
+            <input id="end" type="date" name="end_date" class="form-control"
+                    placeholder="To"
+                    aria-label="Search term"
+                    aria-describedby="basic-addon" value="">
+            <script>document.getElementById('end').value = new Date().toISOString().substring(0, 10);</script>
+            <button class="btn btn-light btn-block" type="submit" style="font-size: 18px" onclick="">
+                <strong>Go</strong>
+            </button><br><br>
+            {% if start_date and end_date %}
+                <script>
+                document.getElementById('start').value = "{{ start_date | safe }}";
+                document.getElementById('end').value =  "{{ end_date | safe }}";
+                var time = [];
+                var monthly_spend = [];
+                </script>
+                {% if spending %}
+                    <p3 style="font-size: 18px"><strong>Your total spending during this period is: ${{ spending['total_spending'] }}</strong></p2><br><br>
+                    {% if mon_spending %}
+                        {% for mon in mon_spending %}
+                            <script>
+                            time.push("{{ mon['year'] }}" + "/" + "{{ mon['month'] }}");
+                            monthly_spend.push("{{ mon['monthly_spending'] }}");
+                            </script>
+                        {% endfor %}
+                    {% endif %}
+                    <center>
+                        <div id="main" style="width: 600px;height:350px;"></div>
+                    </center>
+                    <script type="text/javascript">
+                        var myChart = echarts.init(document.getElementById('main'));
+                        var option = {
+
+                            title: {
+                                text: 'Monthly Spending History',
+                            },
+                            tooltip: {},
+                            legend: {
+                                data:['Monthly Spending']
+                            },
+                            xAxis: {
+                                data: time
+                            },
+                            yAxis: {},
+                            series: [{
+                                color: ["#316bc2"],
+                                name: 'Monthly Spending',
+                                type: 'bar',
+                                data: monthly_spend
+                            }],
+                            animationDurationUpdate: function (idx) {
+                            return idx * 500;
+                            }
+                        };
+                
+                        myChart.setOption(option);
+                    </script>
+                    {% else %}
+                    <p3 style="font-size: 18px"><strong>You haven't booked any flights during this period.</strong></p2>
+                    {% endif %}
+                {% endif %}
+            </div>
+    </form>
+</body>
+</html>

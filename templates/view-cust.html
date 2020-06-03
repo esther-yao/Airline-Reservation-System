@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Customer</title>
+    <style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+          var messages = "{{ messages[0] | safe }}";
+            alert(messages);
+      </script>
+    {% endif %}
+    {% endwith %}
+    <h1>Star Customer</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+        <button id="back_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/staff-home'"><em><strong>Go Back</strong></em></button>
+        <button id="profile_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/profile'"><em><strong>My Profile</strong></em></button>
+        <button id="logout_button" type="button" style="font-size: 16px" class="btn btn-light btn-block" onclick="window.location.href='/logout'"><em><strong>Log Out</strong></em></button>
+    </div><br><br>
+    
+    <center>
+    <p2 style="font-size: 18px"><strong>{{ cust_sales_y['name'] }} ({{ cust_sales_y['email'] }}) has bought {{ cust_sales_y['ticket'] }} tickets since last year. </strong></p2><br>
+    
+    <p2 style="font-size: 18px"><strong>A list of all the flights he/she bought: </strong></p2>
+    <div id="search_result">
+        <ul class="seach-flight list-group list-group-flush";>
+            {% if cust_all_flights %}   
+                <table TABLE-ATTRIBUTES border=3px solid white>                                      
+                    <th>Airline</th>
+                    <th>Flight Number</th>
+                    <th>Purchase Date</th> 
+                    <th>Status</th>
+                    <th>Airplane ID</th>
+                    <th>Depature Airport</th>
+                    <th>Departure Time</th>
+                    <th>Arrival Airport</th>                   
+                    <th>Arrival Time</th>
+                    <th>Price</th>
+                    {% for cust_all_flight in cust_all_flights %}
+                        <tr TABLE-CELL-ATTRIBUTES align="center">
+                            <td>{{ cust_all_flight['airline_name'] }}</td>
+                            <td>{{ cust_all_flight['flight_num'] }}</td>
+                            <td>{{ cust_all_flight['purchase_date'] }}</td>
+                            <td>{{ cust_all_flight['status'] }}</td>
+                            <td>{{ cust_all_flight['airplane_id'] }}</td>
+                            <td>{{ cust_all_flight['departure_airport'] }}</td>
+                            <td>{{ cust_all_flight['departure_time'] }}</td>
+                            <td>{{ cust_all_flight['arrival_airport'] }}</td>
+                            <td>{{ cust_all_flight['arrival_time'] }}</td>
+                            <td>{{ cust_all_flight['price']}}</td>                              
+                        </tr> 
+                    {% endfor %} 
+                </table>
+            {% endif %}   
+        </ul>                
+    </div>       
+    <br>
+</center>  
+</body>
+</html>

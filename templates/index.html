@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Reservation System</title>
+    <style>
+        body {
+            background: rgb(32, 84, 139);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        table {
+            background-color: whitesmoke;
+            color: rgb(32, 84, 139);
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+          var messages = "{{ messages[0] | safe }}";
+            alert(messages);
+      </script>
+    {% endif %}
+    {% endwith %}
+
+    <h1>Airline Reservation System</h1>
+    <div class style="position: absolute; top: 1; right: 0">
+            <button id="login_button" type="button" style="font-size: 16px" class="btn btn-light btn-block"
+            onclick="window.location.href='/login'"><em><strong>Login</strong></em></button>
+            <button id="register_button" type="button" style="font-size: 16px" class="btn btn-light btn-block"
+                onclick="window.location.href='/register'"><em><strong>Register</strong></em></button>
+    </div>
+    <div class="container" style="padding-top: 42px;">
+        <div class="row" style="text-align: center;">
+            <div class="col-md-12 col-sm-12 col-lg-12">
+                <p style="font-size: 18px;"><strong>Search For Upcoming Flights</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <form method="POST" action="/">
+        <div class="row" style="text-align: center;">
+            <input type="text" class="form-control" name="source_airport"
+                    placeholder="Departure Airport">
+
+            <input type="text" class="form-control" name="dest_airport"
+                    placeholder="Arrival Airport">
+
+            <input type="text" onfocus="(this.type='date')" class="form-control" name="airport_time"
+                    placeholder="Departure Date"
+                    aria-label="Search term"
+                    aria-describedby="basic-addon" value="">
+            <button class="btn btn-light btn-block" type="submit" style="font-size: 18px" onclick="">
+                <strong>Go</strong>
+            </button>
+        </div>
+        <div class="container search-flight" id="search_for_flights">
+            <div id="search_result">
+                <ul class="seach-flight list-group list-group-flush";>
+                 {% if search_results %}   
+                    <center>
+                        <table TABLE-ATTRIBUTES border=3px solid white>                      
+                            <th>Airline</th>
+                            <th>Flight Number</th>
+                            <th>Status</th>
+                            <th>Airplane ID</th>
+                            <th>Depature Airport</th>
+                            <th>Departure Time</th>
+                            <th>Arrival Airport</th>                   
+                            <th>Arrival Time</th>
+                            {% for search in search_results %} 
+                            <tr TABLE-CELL-ATTRIBUTES align="center">                                                               
+                                <td>{{ search['airline_name'] }}</td>
+                                <td>{{ search['flight_num'] }}</td>
+                                <td>{{ search['status'] }}</td>
+                                <td>{{ search['airplane_id'] }}</td>
+                                <td>{{ search['departure_airport'] }}</td>
+                                <td>{{ search['departure_time'] }}</td>
+                                <td>{{ search['arrival_airport'] }}</td>
+                                <td>{{ search['arrival_time'] }}</td>                              
+                            </tr> 
+                            {% endfor %}   
+                        </table>
+                    </center>
+                    {% endif %}                   
+                </ul>
+            </div>       
+        </div>
+
+        <div class="container" style="padding-top: 42px;">
+            <div class="row" style="text-align: center;">
+                <div class="col-md-12 col-sm-12 col-lg-12">
+                    <p style="font-size: 18px;"><strong>Check Flight Status</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="text-align: center;">
+            <input type="text" class="form-control" name="airline_name" placeholder="Airline Name">
+            <input type="text" class="form-control" name="flight_num" placeholder="Flight Number">
+
+            <input type="text" onfocus="(this.type='date')" class="form-control" name="dep_time" placeholder="Departure Date">
+
+            <input type="text" onfocus="(this.type='date')" class="form-control" name="arri_time" placeholder="Arrival Date" aria-label="Search term" aria-describedby="basic-addon" value="">
+            <button class="btn btn-light btn-block" type="submit" style="font-size: 18px" onclick="">
+                <strong>Go</strong>
+            </button>
+        </div>   
+        
+        <div class="container search-flight" id="check_for_flights">
+            <div id="check_result">
+                <ul class="check-flight list-group list-group-flush">       
+                    {% if check_results %}            
+                         <center>   
+                            <table TABLE-ATTRIBUTES border=3px solid white>
+                                <th>Status</th>
+                                <th>Airline</th>
+                                <th>Flight Number</th>
+                                <th>Airplane ID</th>
+                                <th>Depature Airport</th>
+                                <th>Departure Time</th>
+                                <th>Arrival Airport</th>                   
+                                <th>Arrival Time</th>
+                                {% for check in check_results %}
+                                <tr TABLE-CELL-ATTRIBUTES align="center">      
+                                    <td>{{ check['status'] }}</td>                         
+                                    <td>{{ check['airline_name'] }}</td>
+                                    <td>{{ check['flight_num'] }}</td>
+                                    <td>{{ check['airplane_id'] }}</td>
+                                    <td>{{ check['departure_airport'] }}</td>
+                                    <td>{{ check['departure_time'] }}</td>
+                                    <td>{{ check['arrival_airport'] }}</td>
+                                    <td>{{ check['arrival_time'] }}</td>                                
+                                </tr> 
+                                {% endfor %}                          
+                            </table> 
+                        </center>
+                    {% endif %}                       
+                </ul>
+            </div>       
+        </div>
+    </form>
+    <br>
+   
+</body>
+</html>

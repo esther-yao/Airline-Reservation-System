@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Register Page</title>
+	<style>
+        body {
+            background: rgb(160, 186, 213);
+            color: white;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+        {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                         <script>
+                                var messages = "{{ messages[0] | safe }}";
+                                        alert(messages);
+                        </script>
+                {% endif %}
+        {% endwith %}
+    <div class="row justify-content-center">
+        <form action="/register-customer" class="form" method="POST">
+         
+                <div class="form-row">
+                <div class="form-group col-md-12">
+                        <center>
+                        <h1 style="font-size: 200%">Customer Registration</h1>
+                </div>
+                </div>
+
+                <label for="inputEmail"><strong>Email:</strong></label>
+                <input size="40"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="email" id="inputEmail" name="email" class="form-control"
+                        placeholder="length smaller than 50" required="" maxlength="50">
+                <br/><br/>
+
+                <label for="inputPassword"><strong>Password:</strong></label>
+                <input size="40"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="password" id="inputPassword" name="password" class="form-control"
+                        placeholder="length smaller than 50" required="" maxlength="50">
+                <br/><br/>
+                
+
+                <label for="inputFullname"><strong>Name:</strong></label>
+                <input size="30"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="fullname" name="name" class="form-control"
+                        placeholder="length smaller than 50" required="" maxlength="50">
+                <br/><br/>
+
+                <label for="inputBuilding"><strong>Building Number:</strong></label>
+                <input size="20"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="inputbuildingnum" name="building_number" class="form-control"
+                        placeholder="length smaller than 30" required="" maxlength="30">
+                <br/><br/>
+
+                <label for="inputStreet"><strong>Street:</strong></label>
+                <input size="40"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="inputstreet" name="street" class="form-control"
+                        placeholder="length smaller than 30" required="" maxlength="30">
+                <br/><br/>
+                
+                <label for="inputCity"><strong>City:</strong></label>
+                <input size="20"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="inputcity" name="city" class="form-control"
+                        placeholder="length smaller than 30" required="" maxlength="30">
+                <br/><br/>
+
+                <label for="inputState"><strong>State:</strong></label>
+                <input size="20"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="inputstate" name="state" class="form-control"
+                        placeholder="length smaller than 30" required="" maxlength="30">
+                <br/><br/>
+
+                <label for="inputPhone"><strong>Phone Number:</strong></label>
+                <input size="30"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="inputphonenum" name="phone_number" class="form-control"
+                        placeholder="length smaller than 11" required="" maxlength="11" onkeyup="this.value=this.value.replace(/[^\d]/g,'')">
+                <br/><br/>
+
+                <label for="inputDOB"><strong>Date Of Birth:</strong></label>
+                <input size="30"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="date" id="dateofbirth" name="date_of_birth" class="form-control"
+                        required="" placeholder="YYYY-MM-DD">
+                        <br/><br/>
+
+                <label for="inputPassport"><strong>Passport Number:</strong></label>
+                <input size="30"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="inputpassportnum" name="passport_number" class="form-control"
+                        placeholder="length smaller than 30" required="" maxlength="30">
+                        <br/><br/>
+
+                <label for="inputExpire"><strong>Passport Expiration:</strong></label>
+                <input size="30"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="date" id="inputexpire" name="passport_expiration" class="form-control"
+                        required="" placeholder="YYYY-MM-DD">
+                        <br/><br/>
+
+                <label for="inputCountry" ><strong>Passport Country:</strong></label>
+                <input size="20"
+                        style="padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"
+                        type="text" id="inputcountry" name="passport_country" class="form-control"
+                        placeholder="length smaller than 50" required="" maxlength="50">
+                        <br/><br/>
+
+            <button class="btn btn-lg btn-secondary btn-block" type="submit" value="Register"><strong>Register</strong></button>
+        </form>
+        <a href="/register">Go back</a>
+            </center>
+    </div>    
+</body>
+</html>
